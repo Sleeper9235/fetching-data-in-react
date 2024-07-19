@@ -1,14 +1,43 @@
+import { useState, useEffect } from 'react'
 import * as weatherService from './services/weatherServices'
+import WeatherSearch from './components/WeatherServices'
+import WeatherDetails from './components/WeatherDetails'
 
 const App = () => {
-    const fetchData = async () => {
+  const [weather, setWeather] = useState({})
+
+  useEffect(() => {
+    const fetchDefaultData = async () => {
       const data = await weatherService.show('Chicago')
-      console.log(data)
+
+      const newWeatherState = {
+        location: data.location.name,
+        temperature: data.current.temp_f,
+        condition:  data.current.condition.text,
+      }
+      setWeather(newWeatherState)
     }
+
+    fetchDefaultData()
+  }, [])
+
+    const fetchData = async (city) => {
+      const data = await weatherService.show(city)
+
+      const newWeatherState = {
+        location: data.location.name,
+        temperature: data.current.temp_f,
+        condition:  data.current.condition.text,
+      }
+
+      setWeather(newWeatherState)
+    }
+    console.log(weather)
     return (
       <main>
         <h1>Weather API</h1>
-        <button onClick={fetchData}>Fetch Weather Data</button>
+        <WeatherSearch fetchData={fetchData} />
+        <WeatherDetails weatherDetails={weather} />
       </main>
     )
 }
